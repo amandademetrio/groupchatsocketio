@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Group Chat</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!-- Jquery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <!-- Socket -->
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container mt-3">
+        <h1 class="display-4">Conversation Board</h1>
+        <!-- Big chunck of messages row -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card p-3" id="chatbox">
+                    <% for (var x in current_messages) { %>
+                    <p>From <%= current_messages[x].author %>: <%= current_messages[x].message %></p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        <!-- New message row -->
+        <div class="row mt-3">
+            <div class="col-sm-12">
+                <div class="card p-3">
+                    <input type="text" id="new_message">
+                </div>
+            </div>
+        </div>
+        <!-- Send button -->
+        <div class="row mt-3">
+            <div class="col-sm-6">
+                <h6>Current Users Online</h6>
+                <ul id="current_users">
+                    <% for (var x in current_users) { %>
+                    <li><%= current_users[x] %></li>
+                    <% } %>
+                </ul>
+            </div>
+            <div class="col-sm-6">
+                <input type="submit" role="button" class="btn btn-lg btn-primary float-right" id="submit_message" value="Send">
+            </div>
+        </div>
+    </div>
+    <script>
+    var name = prompt("What is your username?")
+    var socket = io();
+
+    socket.emit('got_a_username',name)
+
+    $("#submit_message").click(function() {
+        console.log("clicked on submit message")
+        var values = $("#new_message").val();
+        socket.emit('new_message',{'values':values,'name':name})
+        document.getElementById('new_message').value='';
+    })
+
+    socket.on('add_new_message', function(data) {
+        $("#chatbox").append("<p>From "+data.author+": "+data.message+"<p>");
+    });
+
+    socket.on('new_user_to_list', function(data) {
+        $("#current_users").append("<li>"+data+"</li>")
+
+    });
+
+    </script>
+</body>
+</html>
