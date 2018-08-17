@@ -50,12 +50,12 @@
     </div>
     <script>
     var name = prompt("What is your username?")
+    
     var socket = io();
 
     socket.emit('got_a_username',name)
 
     $("#submit_message").click(function() {
-        console.log("clicked on submit message")
         var values = $("#new_message").val();
         socket.emit('new_message',{'values':values,'name':name})
         document.getElementById('new_message').value='';

@@ -31,13 +31,11 @@ console.log("listening on port 1337")
 const io = require('socket.io')(server);
 
 io.on('connection', function (socket) {
-    console.log("socket is connected");
+    console.log(socket.id)
 
     socket.on('got_a_username', function(data) {
-        console.log("received name "+data);
         current_users.push(data);
         io.emit('new_user_to_list',data)
-        console.log(current_users)
     })
 
     socket.on('new_message',function(data) {
